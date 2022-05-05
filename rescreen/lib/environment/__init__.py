@@ -1,0 +1,3 @@
+from .desktop_environment.interface import DesktopEnvironmentInterface
+from .detect_environment import check_and_get_desktop_environment
+from .detect_installed_dependencies import check_dependencies

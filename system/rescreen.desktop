@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=ReScreen
+Type=Application
+Terminal=false
+Exec=rescreen
+Icon=rescreen
