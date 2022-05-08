@@ -2,5 +2,5 @@
 Name=ReScreen
 Type=Application
 Terminal=false
-Exec=rescreen
+Exec=rescreen gui
 Icon=rescreen

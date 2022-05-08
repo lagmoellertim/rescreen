@@ -1,5 +1,7 @@
 from shutil import which
 
+from loguru import logger
+
 
 def is_executable_available(executable_name):
     """
@@ -14,7 +16,14 @@ def is_executable_available(executable_name):
 def check_dependencies():
     dependencies = ["xrandr", "xev", "loginctl", "whoami"]
 
-    unavailable_dependencies = [dependency for dependency in dependencies if not is_executable_available(dependency)]
+    unavailable_dependencies = [
+        dependency for dependency in dependencies if not is_executable_available(dependency)
+    ]
 
     if len(unavailable_dependencies) > 0:
-        raise EnvironmentError(f"The following dependencies are missing: {', '.join(unavailable_dependencies)}")
+        logger.critical(
+            f"Not all command utilities were found. Missing: {unavailable_dependencies}"
+        )
+        raise EnvironmentError(
+            f"The following dependencies are missing: {', '.join(unavailable_dependencies)}"
+        )

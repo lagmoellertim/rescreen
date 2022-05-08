@@ -4,8 +4,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
-from rescreen.ui.main_controller import MainController
-from rescreen.ui.preview.preview_item import PreviewItem
+from rescreen.gui.main_controller import MainController
+from rescreen.gui.preview.preview_item import PreviewItem
 
 
 class Preview(QGraphicsView):

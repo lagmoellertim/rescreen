@@ -9,8 +9,8 @@ Modes = Dict[Resolution, List[RefreshRate]]
 PortModesMapping = Dict[Port, Modes]
 
 
-class Orientation(enum.Enum):
-    Normal = "normal"
-    Left = "left"
-    Right = "right"
-    Inverted = "inverted"
+class Orientation(str, enum.Enum):
+    NORMAL = "normal"
+    LEFT = "left"
+    RIGHT = "right"
+    INVERTED = "inverted"

@@ -1,6 +1,12 @@
 import dataclasses
 
-from rescreen.lib.interfaces import Resolution, Offset, Modes, RefreshRate, Orientation
+from rescreen.lib.interfaces import (
+    Resolution,
+    Offset,
+    Modes,
+    RefreshRate,
+    Orientation,
+)
 
 
 @dataclasses.dataclass

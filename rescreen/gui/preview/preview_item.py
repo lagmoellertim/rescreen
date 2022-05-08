@@ -7,12 +7,12 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
+from rescreen.gui.main_controller import MainController
 from rescreen.lib.interfaces import Orientation
 from rescreen.lib.state import DisplayState
-from rescreen.ui.main_controller import MainController
 
 if False:
-    from rescreen.ui.preview.preview import Preview
+    from rescreen.gui.preview.preview import Preview
 
 
 class PreviewItem(QGraphicsRectItem):
@@ -24,8 +24,12 @@ class PreviewItem(QGraphicsRectItem):
     TEXT_CONTAINER_ROUNDING = 5
     PRIMARY_BAR_HEIGHT = 10
 
-    def __init__(self, controller: MainController, preview: "Preview",
-                 display: DisplayState):
+    def __init__(
+        self,
+        controller: MainController,
+        preview: "Preview",
+        display: DisplayState,
+    ):
         super(PreviewItem, self).__init__()
         self.display = display
 
@@ -35,8 +39,11 @@ class PreviewItem(QGraphicsRectItem):
         self.__display_width = int(self.display.resolution[0] * self.display.resolution_scale)
         self.__display_height = int(self.display.resolution[1] * self.display.resolution_scale)
 
-        if self.display.orientation in [Orientation.Left, Orientation.Right]:
-            self.__display_width, self.__display_height = self.__display_height, self.__display_width
+        if self.display.orientation in [Orientation.LEFT, Orientation.RIGHT]:
+            self.__display_width, self.__display_height = (
+                self.__display_height,
+                self.__display_width,
+            )
 
         self.setRect(QRectF(0, 0, self.__display_width, self.__display_height))
         self.setFlag(QGraphicsItem.ItemIsMovable)
@@ -45,8 +52,12 @@ class PreviewItem(QGraphicsRectItem):
 
         self.__controller.on_current_display_changed.connect(self.on_current_display_changed)
 
-    def paint(self, painter: PySide6.QtGui.QPainter, option: PySide6.QtWidgets.QStyleOptionGraphicsItem,
-              widget: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
+    def paint(
+        self,
+        painter: PySide6.QtGui.QPainter,
+        option: PySide6.QtWidgets.QStyleOptionGraphicsItem,
+        widget: Optional[PySide6.QtWidgets.QWidget] = ...,
+    ) -> None:
         super().paint(painter, option, widget)
 
         painter.setRenderHint(QPainter.Antialiasing)
@@ -65,11 +76,16 @@ class PreviewItem(QGraphicsRectItem):
         painter.setFont(font)
 
         # Generate Text to display
-        sorted_display_numbers = sorted([display.metadata.display_number for display in
-                                         self.__controller.get_current_state().get_mirrored_displays(self.display)])
+        sorted_display_numbers = sorted(
+            [
+                display.metadata.display_number
+                for display in self.__controller.get_current_state().get_mirrored_displays(
+                    self.display
+                )
+            ]
+        )
 
-        text = " + ".join(
-            [str(x) for x in [self.display.display_number, *sorted_display_numbers]])
+        text = " + ".join([str(x) for x in [self.display.display_number, *sorted_display_numbers]])
 
         # Calculate Scaled Variables
         scaled_padding = self.TEXT_CONTAINER_PADDING / scaling
@@ -85,18 +101,31 @@ class PreviewItem(QGraphicsRectItem):
         path = QPainterPath()
         text_width = painter.boundingRect(0, 0, 0, 0, 0, text).width()
         path.addRoundedRect(
-            QRect(scaled_margin, scaled_margin, text_width + scaled_padding * 2, scaled_font_size + scaled_padding * 2),
+            QRect(
+                scaled_margin,
+                scaled_margin,
+                text_width + scaled_padding * 2,
+                scaled_font_size + scaled_padding * 2,
+            ),
             scaled_rounding,
-            scaled_rounding)
+            scaled_rounding,
+        )
         painter.fillPath(path, bg_color)
 
         # Draw Display Number
         painter.setPen(font_color)
-        painter.drawText(scaled_margin + scaled_padding, scaled_font_size + scaled_margin + scaled_padding, text)
+        painter.drawText(
+            scaled_margin + scaled_padding,
+            scaled_font_size + scaled_margin + scaled_padding,
+            text,
+        )
 
     def get_pattern(self, active):
-        square_size = ((self.CHECKER_BOARD_BASE_SIZE / self.__preview.current_scale) /
-                       self.display.resolution_scale * self.__controller.get_current_state().ui_scale)
+        square_size = (
+            (self.CHECKER_BOARD_BASE_SIZE / self.__preview.current_scale)
+            / self.display.resolution_scale
+            * self.__controller.get_current_state().ui_scale
+        )
 
         color_1 = self.__preview.palette().color(QPalette.Inactive, QPalette.Base)
         if active:
@@ -111,7 +140,10 @@ class PreviewItem(QGraphicsRectItem):
         painter.begin(pattern)
 
         painter.fillRect(QRect(0, 0, square_size, square_size), color_2)
-        painter.fillRect(QRect(square_size, square_size, square_size * 2, square_size * 2), color_2)
+        painter.fillRect(
+            QRect(square_size, square_size, square_size * 2, square_size * 2),
+            color_2,
+        )
 
         return pattern
 
@@ -134,7 +166,10 @@ class PreviewItem(QGraphicsRectItem):
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
             point: QPointF = value
-            current = QRectF(point, point + QPointF(self.rect().width(), self.rect().height()))
+            current = QRectF(
+                point,
+                point + QPointF(self.rect().width(), self.rect().height()),
+            )
 
             dist = self.SNAPPING_DISTANCE / self.__preview.current_scale
 
@@ -151,17 +186,27 @@ class PreviewItem(QGraphicsRectItem):
                 other_center_x = display_preview.x() + display_preview.rect().width() / 2
                 other_center_y = display_preview.y() + display_preview.rect().height() / 2
 
-                return math.sqrt((other_center_x - current_center_x) ** 2 + (other_center_y - current_center_y) ** 2)
+                return math.sqrt(
+                    (other_center_x - current_center_x) ** 2
+                    + (other_center_y - current_center_y) ** 2
+                )
 
             for display in sorted(self.__preview.preview_items, key=order, reverse=True):
-                other = QRectF(QPointF(display.x(), display.y()),
-                               QPointF(display.x() + display.rect().width(), display.y() + display.rect().height()))
+                other = QRectF(
+                    QPointF(display.x(), display.y()),
+                    QPointF(
+                        display.x() + display.rect().width(),
+                        display.y() + display.rect().height(),
+                    ),
+                )
 
                 if display != self:
-                    if (abs(current.left() - other.left()) <= dist and
-                            abs(current.top() - other.top()) <= dist and
-                            current.width() == other.width() and
-                            current.height() == other.height()):
+                    if (
+                        abs(current.left() - other.left()) <= dist
+                        and abs(current.top() - other.top()) <= dist
+                        and current.width() == other.width()
+                        and current.height() == other.height()
+                    ):
                         return other.topLeft()
 
                     if current.bottom() >= other.top() and other.bottom() >= current.top():

@@ -1,10 +1,12 @@
 from typing import Union
 
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMainWindow, QCheckBox, QRadioButton, QComboBox
 
+from rescreen.gui.main_controller import MainController
 from rescreen.lib.interfaces import Orientation
-from rescreen.lib.utils import calculate_aspect_ratio
-from rescreen.ui.main_controller import MainController
+from rescreen.lib.utils.misc import calculate_aspect_ratio
 from .layouts.main_layout import Ui_MainWindow
 
 
@@ -14,6 +16,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.preview.set_controller(controller)
         self.retranslateUi(self)
+
+        icon = QIcon()
+        icon.addFile(
+            "/usr/share/icons/rescreen.png",
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        self.setWindowIcon(icon)
 
         self.controller = controller
         self.controller.on_current_display_changed.connect(self.update_all)
@@ -38,7 +49,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             for i, display in enumerate(connected_displays):
                 self.display_selection_dropdown.addItem(
-                    f"{display.display_number}. {display.name} ({display.port})", display)
+                    f"{display.display_number}. {display.name} ({display.port})",
+                    display,
+                )
 
                 if display == current_display:
                     self.display_selection_dropdown.setCurrentIndex(i)
@@ -104,20 +117,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
         if self.__setup_display_settings_dropdown(self.orientation_dropdown):
-            self.orientation_dropdown.addItem("Landscape", Orientation.Normal)
-            self.orientation_dropdown.addItem("Portrait Left", Orientation.Left)
-            self.orientation_dropdown.addItem("Portrait Right", Orientation.Right)
-            self.orientation_dropdown.addItem("Landscape (flipped)", Orientation.Inverted)
+            self.orientation_dropdown.addItem("Landscape", Orientation.NORMAL)
+            self.orientation_dropdown.addItem("Portrait Left", Orientation.LEFT)
+            self.orientation_dropdown.addItem("Portrait Right", Orientation.RIGHT)
+            self.orientation_dropdown.addItem("Landscape (flipped)", Orientation.INVERTED)
 
             orientationMapping = {
-                Orientation.Normal: 0,
-                Orientation.Left: 1,
-                Orientation.Right: 2,
-                Orientation.Inverted: 3
+                Orientation.NORMAL: 0,
+                Orientation.LEFT: 1,
+                Orientation.RIGHT: 2,
+                Orientation.INVERTED: 3,
             }
 
             self.orientation_dropdown.setCurrentIndex(
-                orientationMapping[self.controller.get_current_display().orientation])
+                orientationMapping[self.controller.get_current_display().orientation]
+            )
 
         self.orientation_dropdown.currentIndexChanged.connect(self.on_orientation_changed)
 
@@ -133,7 +147,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for i, resolution in enumerate(current_display.available_resolutions):
                 aspect_ratio = calculate_aspect_ratio(resolution[0], resolution[1])
                 self.resolution_dropdown.addItem(
-                    f"{resolution[0]} x {resolution[1]} ({aspect_ratio[0]}:{aspect_ratio[1]})", resolution)
+                    f"{resolution[0]} x {resolution[1]} ({aspect_ratio[0]}:{aspect_ratio[1]})",
+                    resolution,
+                )
 
                 if resolution == current_display.resolution:
                     self.resolution_dropdown.setCurrentIndex(i)
@@ -150,7 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.__setup_display_settings_dropdown(self.refresh_rate_dropdown):
             for i, refresh_rate in enumerate(
-                    current_display.get_available_refresh_rates(current_display.resolution)):
+                current_display.get_available_refresh_rates(current_display.resolution)
+            ):
                 self.refresh_rate_dropdown.addItem(refresh_rate, refresh_rate)
 
                 if refresh_rate == current_display.refresh_rate:
@@ -171,6 +188,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if scale == self.controller.get_current_state().ui_scale:
                     self.ui_scale_dropdown.setCurrentIndex(i)
 
+            if self.controller.get_current_state().current_desktop_environment is None:
+                self.ui_scale_dropdown.setDisabled(True)
+
         self.ui_scale_dropdown.currentIndexChanged.connect(self.on_ui_scaling_changed)
 
     def update_resolution_scaling(self):
@@ -180,13 +200,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
         if self.__setup_display_settings_dropdown(self.resolution_scale_dropdown):
-            for i, scale in enumerate(self.controller.get_current_display().available_resolution_scales):
+            for i, scale in enumerate(
+                self.controller.get_current_display().available_resolution_scales
+            ):
                 self.resolution_scale_dropdown.addItem(f"{int(scale * 100)} %", scale)
 
                 if scale == self.controller.get_current_display().resolution_scale:
                     self.resolution_scale_dropdown.setCurrentIndex(i)
 
-        self.resolution_scale_dropdown.currentIndexChanged.connect(self.on_resolution_scaling_changed)
+        self.resolution_scale_dropdown.currentIndexChanged.connect(
+            self.on_resolution_scaling_changed
+        )
 
     def on_resolution_changed(self, _):
         self.controller.set_current_resolution(self.resolution_dropdown.currentData())

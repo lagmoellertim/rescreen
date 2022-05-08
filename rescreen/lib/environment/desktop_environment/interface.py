@@ -5,27 +5,32 @@ from typing import List
 class DesktopEnvironmentInterface(ABC):
     name: str
 
+    # Implemented externally
     @staticmethod
-    @abstractmethod
-    def is_current_desktop_environment() -> bool:
+    def get_user_confirmation(_: str) -> bool:
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def pre_xrandr_hook(scaling: float):
+    def is_current_desktop_environment(cls) -> bool:
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def post_xrandr_hook(scaling: float):
+    def pre_xrandr_hook(cls, scaling: float) -> bool:
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def get_ui_scale() -> float:
+    def post_xrandr_hook(cls, scaling: float) -> None:
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def get_available_ui_scales() -> List[float]:
+    def get_ui_scale(cls) -> float:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def get_available_ui_scales(cls) -> List[float]:
         pass

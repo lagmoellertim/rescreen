@@ -1,7 +1,7 @@
 from typing import Tuple
 
 
-def gcd(a, b):
+def gcd(a: int, b: int) -> int:
     return a if b == 0 else gcd(b, a % b)
 
 
