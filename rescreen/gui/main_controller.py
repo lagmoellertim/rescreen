@@ -89,8 +89,7 @@ class MainController(QObject):
             self.on_current_display_config_changed.emit()
 
     @staticmethod
-    def set_display_offset(
-        self, display: DisplayState, virtual_offset: Offset, emit: bool = True
+    def set_display_offset(display: DisplayState, virtual_offset: Offset
     ) -> None:
         display.virtual_offset = virtual_offset
 
