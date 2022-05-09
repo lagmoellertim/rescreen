@@ -14,4 +14,3 @@ jobs:
       uses: brettdorrans/write-version-to-file@master
       with:
         filename: '/.VERSION'
-        placeholder: '${VERSION}'
