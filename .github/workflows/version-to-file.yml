@@ -5,12 +5,12 @@ on:
       - main
 
 jobs:
-  write-version:
+  version-to-file:
     runs-on: ubuntu-latest
     name: Write Version to File
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - name: Update version
       uses: brettdorrans/write-version-to-file@master
       with:
-        filename: '/.VERSION'
+        filename: '.VERSION'
