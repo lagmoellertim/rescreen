@@ -1,8 +1,8 @@
 [Unit]
-Description=ReScreen XServer and Screen Change Watchdog
+Description=ReScreen XServer and Screen Change Watcher
 
 [Service]
-ExecStart=rescreen watcher
+ExecStart=rescreen watcher --log /var/log/rescreen.log
 Restart=always
 RestartSec=1
 
