@@ -2,12 +2,11 @@ import re
 import subprocess
 from typing import List, Optional
 
-import pyedid
 from loguru import logger
 
 from rescreen.lib.interfaces import Orientation
 from rescreen.lib.xrandr import DisplayData
-
+from rescreen.lib.app_settings import AppSettings
 
 def get_current_display_data(
     x_display: Optional[str] = None,
@@ -45,19 +44,40 @@ def get_current_display_data(
         current_resolution = None
         current_refresh_rate = None
 
-        internal = parsed_display["port"].startswith(("eDP", "LVDS"))
+        internal = parsed_display["port"].startswith(
+            tuple(AppSettings.instance().internal_port_names)
+        )
 
         raw_edid = edid_pattern.search(parsed_display["metadata"])
         edid = None
         if raw_edid:
             edid = raw_edid.groupdict()["edid"].replace("\n", "").replace("\t", "")
+        else:
+            raise ValueError("Display does not have an edid value")
 
-        parsed_edid = pyedid.parse_edid(edid)
-        name = "Unknown"
-        if parsed_edid.name:
-            name = parsed_edid.name
-        elif internal:
-            name = "Internal Display"
+        name = None
+
+        if edid:
+            process = subprocess.Popen(
+                ["edid-decode"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+
+            stdout, stderr = process.communicate(edid.encode("utf-8"))
+
+            if process.returncode == 0:
+                result = re.findall(r"Display Product Name: '(.*)'", stdout.decode("utf-8"))
+                if result:
+                    name = result[0]
+            else:
+                logger.warning(f"Failed to get product name of display {parsed_display['port']}")
+                logger.debug(f"edid-decode Output: {stderr.decode('utf-8')}")
+
+        if name is None:
+            if internal:
+                name = "Internal Display"
+            else:
+                name = "Unknown"
 
         orientation = Orientation.NORMAL
         if parsed_display["orientation"] == "left":
@@ -117,8 +137,8 @@ def get_current_display_data(
                 enabled=False,
                 primary=False,
                 edid=edid,
-                offset=(-1, -1),
-                resolution_mm=(-1, -1),
+                offset=(0, 0),
+                resolution_mm=(0, 0),
                 orientation=orientation,
                 internal=internal,
             )

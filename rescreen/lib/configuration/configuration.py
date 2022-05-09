@@ -1,9 +1,8 @@
 import hashlib
 import json
 from typing import List, Optional, Any, Dict, Callable
-
+import yaml
 from pydantic import BaseModel, validator
-from ruamel.yaml import YAML
 
 from rescreen.lib.interfaces import (
     Resolution,
@@ -90,14 +89,11 @@ class Configuration(BaseModel):
         return Configuration(displays=displays, ui_scale=data.ui_scale)
 
     def to_yaml(self, file):
-        yaml = YAML(typ="safe")
-        yaml.dump(json.loads(self.json()), file)
+        yaml.safe_dump(json.loads(self.json()), file)
 
     @staticmethod
     def from_yaml(file):
-        yaml = YAML(typ="safe")
-
-        return Configuration.parse_raw(json.dumps(yaml.load(file)))
+        return Configuration.parse_raw(json.dumps(yaml.safe_load(file)))
 
     def to_xrandr_settings(self):
         return _utils.to_xrandr_settings(self)

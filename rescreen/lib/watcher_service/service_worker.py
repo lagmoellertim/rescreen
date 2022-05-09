@@ -51,6 +51,7 @@ class ServiceWorker(Process):
         listener = XEventWatcher()
         listener.daemon = True
         listener.add_connection_event_callback(self.load_current_profile)
+        self.load_current_profile()
         listener.start()
 
         listener.join()

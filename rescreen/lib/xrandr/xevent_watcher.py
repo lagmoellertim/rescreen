@@ -39,20 +39,20 @@ class XEventWatcher(Thread):
 
         return len(added_displays) > 0 or len(removed_displays) > 0
 
-    @debounce(2)
+    @debounce(3)
     def emit_all_events(self):
         logger.info("Debounced XSession Event occurred, notifying callbacks")
         for callback in self.__any_event_callbacks:
             callback()
 
-    @debounce(2)
+    @debounce(3)
     def emit_connection_changed(self):
         logger.info("Debounced XSession Display Connection Event occurred, notifying callbacks")
         for callback in self.__connection_event_callbacks:
             callback()
 
     def run(self) -> None:
-        command = ["xev", "-root", "-event", "randr", "-1"]
+        command = ["xev", "-root", "-event", "randr"]
 
         with subprocess.Popen(command, stdout=subprocess.PIPE) as process:
             self.__process = process

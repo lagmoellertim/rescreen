@@ -148,7 +148,7 @@ class KDE(DesktopEnvironmentInterface):
         env = os.environ
         env["PLASMA_USE_QT_SCALING"] = "1"
 
-        subprocess.call(["kstart", "plasmashell"], env=env)
+        subprocess.call(["kstart5", "plasmashell"], env=env)
 
     @classmethod
     def get_ui_scale(cls) -> float:

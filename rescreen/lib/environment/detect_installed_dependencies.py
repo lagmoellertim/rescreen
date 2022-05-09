@@ -14,7 +14,7 @@ def is_executable_available(executable_name):
 
 
 def check_dependencies():
-    dependencies = ["xrandr", "xev", "loginctl", "whoami"]
+    dependencies = ["xrandr", "xev", "loginctl", "whoami", "edid-decode"]
 
     unavailable_dependencies = [
         dependency for dependency in dependencies if not is_executable_available(dependency)
