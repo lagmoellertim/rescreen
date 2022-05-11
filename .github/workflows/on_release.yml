@@ -18,11 +18,19 @@ jobs:
       run: mkdir -p build/release
     - name: Create DEB Package
       run: |
-        mkdir -p /home/build/deb
-        mkdir -p /home/build/release
+        mkdir -p build/deb
+        mkdir -p build/deb2
+        mkdir -p build/release
+        mkdir -p build/release2
         docker build packaging/deb -t create_deb_package
-        docker run -v $PWD:/rescreen -v /home/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
-        cp /home/build/deb/*.deb /home/build/release
+        docker run -v $PWD:/rescreen -v  $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+        cp build/deb/*.deb build/release
+        ls -la build/release
+
+        docker run -v $PWD:/rescreen -v  $PWD/build/deb2:/build --user $UID create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+        cp build/deb2/*.deb build/release2
+        ls -la build/release2
+
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
