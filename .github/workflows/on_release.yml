@@ -1,6 +1,6 @@
 name: Publish
 
-on: push
+on: tag
 
 jobs:
   build:
@@ -11,10 +11,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Get Version
       run: echo "VERSION=$(sed ':a; N; s/[[:space:]]//g; ta' VERSION)" >> $GITHUB_ENV
+    - name: Prepare Release File Folder
+      run: mkdir -p build/release
     - name: Create DEB Package
       run: |
         mkdir -p build/deb
         docker build packaging/deb -t create_deb_package
         docker run -v $PWD:/rescreen -v $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+        cp build/deb/*.deb build/release
     - name: LS Dir
-      run: ls $PWD/build/deb/*.deb
+      run: ls build/release
