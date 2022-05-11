@@ -1,0 +1,18 @@
+name: Publish
+
+on: push
+
+jobs:
+  build:
+    name: Publish binaries
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Version
+      run: sed ':a; N; s/[[:space:]]//g; ta' VERSION >> $GITHUB_ENV
+    - name: ls
+      run: |
+        mkdir -p build/deb
+        docker build packaging/deb -t create_deb_package
+        docker run -v $PWD:/rescreen -v $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
