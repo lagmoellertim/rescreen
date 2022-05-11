@@ -18,15 +18,16 @@ jobs:
       run: mkdir -p build/release
     - name: Create DEB Package
       run: |
-        mkdir -p /build/deb
+        mkdir -p /home/build/deb
+        mkdir -p /home/build/release
         docker build packaging/deb -t create_deb_package
-        docker run -v $PWD:/rescreen -v $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
-        cp build/deb/*.deb /build/release
+        docker run -v $PWD:/rescreen -v /home/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+        cp /home/build/deb/*.deb /home/build/release
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: /build/release/*
+        file: /home/build/release/*
         tag: ${{ github.ref }}
         overwrite: true
         file_glob: true
