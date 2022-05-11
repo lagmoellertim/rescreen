@@ -4,7 +4,7 @@ import sys
 from multiprocessing import Process
 from typing import Dict
 
-from PySide6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 from loguru import logger
 
 from rescreen.gui.utils import prompt

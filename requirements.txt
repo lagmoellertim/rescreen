@@ -1,4 +1,4 @@
-pyside6~=6.3.0
 pydantic~=1.9.0
 loguru~=0.6.0
 PyYAML~=6.0
+PySide2~=5.15.2.1

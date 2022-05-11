@@ -1,0 +1,7 @@
+Package: rescreen
+Version: UNSET
+Depends: python3, python3-pydantic, python3-loguru, python3-yaml, python3-typing-extensions, edid-decode, python3-pyside2.qtcore, python3-pyside2.qtgui, python3-pyside2.qtwidgets, x11-utils, x11-xserver-utils
+Architecture: all
+Maintainer: Tim-Luca Lagmöller <mail@lagmoellertim.de>
+Description: Display Manager with fractional scaling support for X11
+

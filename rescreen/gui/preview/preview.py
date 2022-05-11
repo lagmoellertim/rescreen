@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 from rescreen.gui.main_controller import MainController
 from rescreen.gui.preview.preview_item import PreviewItem

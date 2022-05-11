@@ -3,7 +3,7 @@ import signal
 import subprocess
 import sys
 
-from PySide6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 from loguru import logger
 
 from rescreen.gui import MainController, MainWindow
@@ -133,7 +133,7 @@ def start_gui():
     change_listener.add_any_event_callback(main_controller.reload_config)
     change_listener.start()
 
-    exit_code = application.exec()
+    exit_code = application.exec_()
     sys.exit(exit_code)
 
 

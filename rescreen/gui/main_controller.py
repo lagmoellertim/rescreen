@@ -2,8 +2,8 @@ import subprocess
 import sys
 from typing import Optional
 
-from PySide6.QtCore import QObject
-from PySide6.QtCore import Signal
+from PySide2.QtCore import QObject
+from PySide2.QtCore import Signal
 
 from rescreen.gui import utils
 from rescreen.lib.configuration import Configuration

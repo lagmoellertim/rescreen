@@ -1,11 +1,11 @@
 import math
 from typing import Optional
 
-import PySide6.QtGui
-import PySide6.QtWidgets
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+import PySide2.QtGui
+import PySide2.QtWidgets
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 from rescreen.gui.main_controller import MainController
 from rescreen.lib.interfaces import Orientation
@@ -54,9 +54,9 @@ class PreviewItem(QGraphicsRectItem):
 
     def paint(
         self,
-        painter: PySide6.QtGui.QPainter,
-        option: PySide6.QtWidgets.QStyleOptionGraphicsItem,
-        widget: Optional[PySide6.QtWidgets.QWidget] = ...,
+        painter: PySide2.QtGui.QPainter,
+        option: PySide2.QtWidgets.QStyleOptionGraphicsItem,
+        widget: Optional[PySide2.QtWidgets.QWidget] = ...,
     ) -> None:
         super().paint(painter, option, widget)
 

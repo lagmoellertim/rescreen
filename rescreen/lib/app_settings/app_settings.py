@@ -30,10 +30,14 @@ class _AppSettings(BaseModel):
                     if raw_config is None:
                         raw_config = {}
 
-                    instance = _AppSettings.parse_raw(json.dumps(raw_config))
+                    instance: _AppSettings = _AppSettings.parse_raw(json.dumps(raw_config))
 
                     logger.info(f"Found valid settings at '{file_path}'")
                     logger.debug(f"Settings: {instance}")
+
+                    # Rewrite the settings so that the local configuration also has the unused keys
+                    instance.write_settings()
+
                     return instance
 
         logger.info("No settings found, writing default settings")

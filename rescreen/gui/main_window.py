@@ -1,8 +1,8 @@
 from typing import Union
 
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMainWindow, QCheckBox, QRadioButton, QComboBox
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow, QCheckBox, QRadioButton, QComboBox
 
 from rescreen.gui.main_controller import MainController
 from rescreen.lib.interfaces import Orientation

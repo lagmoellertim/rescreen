@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open("VERSION", "r") as f:
+    __version__ = f.read().strip()
+
 with open("README.md", "r") as f:
     long_description = f.read()
 
@@ -14,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT License",
-    version="1.0.1",
+    version=__version__,
     url="https://github.com/lagmoellertim/rescreen",
     classifiers=[
         "Programming Language :: Python :: 3",
