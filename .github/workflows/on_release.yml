@@ -35,7 +35,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: /home/build/release/*
+        file: $PWD/build/release2/rescreen_1.0.2-1_all.deb
         tag: ${{ github.ref }}
         overwrite: true
         file_glob: true
