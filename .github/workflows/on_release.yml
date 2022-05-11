@@ -1,6 +1,6 @@
 name: Publish
 
-on: tag
+on: push
 
 jobs:
   build:
