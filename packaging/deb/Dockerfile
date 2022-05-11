@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install python3 python3-pip desktop-file-utils -y
 COPY . /create_package
 WORKDIR /create_package
 
-ENTRYPOINT ["python3", "create_deb_package.py"]
+ENTRYPOINT ["bash", "entrypoint.sh"]

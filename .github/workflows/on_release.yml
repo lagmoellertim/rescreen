@@ -24,6 +24,14 @@ jobs:
         mkdir -p build/deb
         docker run -v $PWD:/rescreen -v  $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
         cp build/deb/*.deb build/release
+    - name: Build Arch Package Generator
+      run: |
+        docker build packaging/arch -t create_arch_package
+    - name: Create Arch Package
+      run: |
+        mkdir -p build/arch
+        docker run -v  $PWD/build/arch:/build create_arch_package -v ${{ env.VERSION }} -o /build
+        cp build/arch/*.pkg.tar.zst build/release
 
     - name: Release
       uses: softprops/action-gh-release@v1

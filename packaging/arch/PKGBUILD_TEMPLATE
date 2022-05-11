@@ -1,0 +1,32 @@
+# Maintainer: Tim-Luca Lagmöller <mail@lagmoellertim.de>
+pkgname=rescreen
+pkgver=UNSET
+pkgrel=UNSET
+pkgdesc="Display Manager with fractional scaling support for X11"
+arch=('any')
+url="https://github.com/lagmoellertim/rescreen"
+license=('MIT')
+groups=()
+depends=(xorg-xrandr xorg-xev python3 pyside2 python-loguru python-pydantic edid-decode-git)
+makedepends=(python-wheel python-setuptools desktop-file-utils)
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("UNSET")
+noextract=()
+sha512sums=('SKIP')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}
