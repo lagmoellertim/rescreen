@@ -10,9 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Get Version
-      run: sed ':a; N; s/[[:space:]]//g; ta' VERSION >> $GITHUB_ENV
-    - name: ls
+      run: echo "VERSION=$(sed ':a; N; s/[[:space:]]//g; ta' VERSION)" >> $GITHUB_ENV
+    - name: Create DEB Package
       run: |
         mkdir -p build/deb
         docker build packaging/deb -t create_deb_package
         docker run -v $PWD:/rescreen -v $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+    - name: LS Dir
+      run: ls $PWD/build/deb/*.deb
