@@ -36,4 +36,4 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          README.md
+          build/release2/*
