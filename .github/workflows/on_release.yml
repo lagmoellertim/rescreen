@@ -18,7 +18,7 @@ jobs:
       run: mkdir -p build/release
     - name: Build DEB Package Generator
       run: |
-        - docker build packaging/deb -t create_deb_package
+        docker build packaging/deb -t create_deb_package
     - name: Create DEB Package
       run: |
         mkdir -p build/deb
