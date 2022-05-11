@@ -6,36 +6,68 @@ on:
       - "*"
 
 jobs:
-  build:
-    name: Publish binaries
+  build_deb:
+    name: Build DEB Package
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Get Version
-      run: echo "VERSION=$(sed ':a; N; s/[[:space:]]//g; ta' VERSION)" >> $GITHUB_ENV
-    - name: Prepare Release File Folder
-      run: mkdir -p build/release
-    - name: Build DEB Package Generator
-      run: |
-        docker build packaging/deb -t create_deb_package
-    - name: Create DEB Package
-      run: |
-        mkdir -p build/deb
-        docker run -v $PWD:/rescreen -v  $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
-        cp build/deb/*.deb build/release
-    - name: Build Arch Package Generator
-      run: |
-        docker build packaging/arch -t create_arch_package
-    - name: Create Arch Package
-      run: |
-        mkdir -p build/arch
-        docker run -v  $PWD/build/arch:/build create_arch_package -v ${{ env.VERSION }} -o /build
-        cp build/arch/*.pkg.tar.zst build/release
+      - uses: actions/checkout@v2
+      - name: Set env
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build DEB Package Generator
+        run: |
+          docker build packaging/deb -t create_deb_package
+      - name: Create DEB Package
+        run: |
+          mkdir -p build/deb
+          docker run -v $PWD:/rescreen -v  $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: deb-build-result
+          path: build/deb
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: |
-          build/release/*
+  build_arch:
+    name: Build Arch Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set env
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build Arch Package Generator
+        run: |
+          docker build packaging/arch -t create_arch_package
+      - name: Create Arch Package
+        run: |
+          mkdir -p build/arch
+          docker run -v  $PWD/build/arch:/build create_arch_package -v ${{ env.VERSION }} -o /build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: arch-build-result
+          path: build/arch
+
+  publish_release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: [build_deb, build_arch]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: deb-build-result
+      - uses: actions/download-artifact@v2
+        with:
+          name: arch-build-result
+
+      - name: Set env
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Prepare Release File Folder
+        run: mkdir -p build/release
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/arch/*.pkg.tar.zst
+            build/deb/*.deb
