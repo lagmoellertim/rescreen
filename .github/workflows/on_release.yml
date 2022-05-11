@@ -23,12 +23,12 @@ jobs:
         docker run -v $PWD:/rescreen -v $PWD/build/deb:/build create_deb_package -v ${{ env.VERSION }} -i /rescreen -o /build
         cp build/deb/*.deb build/release
     - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/release/*
-          asset_name: mything
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          body: "Demo Release"
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/release/*
+        asset_name: mything
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
+        body: "Demo Release"
