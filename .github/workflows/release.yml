@@ -46,8 +46,8 @@ jobs:
           name: arch-build-result
           path: build/arch
 
-  publish_release:
-    name: Publish Release
+  publish_github_release:
+    name: Publish on GitHub Release
     runs-on: ubuntu-latest
     needs: [build_deb, build_arch]
 
@@ -87,9 +87,29 @@ jobs:
         with:
           pkgname: rescreen
           pkgbuild: ./PKGBUILD
-          assets: ./.SRCINFO
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Update AUR package
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+
+  publish_pypi:
+    name: Publish on PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+      - name: Build package
+        run: python -m build
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
