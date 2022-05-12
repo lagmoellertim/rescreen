@@ -57,21 +57,16 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: deb-build-result
+          path: build/deb
       - uses: actions/download-artifact@v2
         with:
           name: arch-build-result
+          path: build/arch
 
-      - name: Set env
-        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Prepare Release File Folder
-        run: |
-          mkdir -p build/release
-          ls -la
-          cp build/arch/*.pkg.tar.zst build/release
-          cp build/deb/*.deb build/release
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/release/*
+            build/arch/*.pkg.tar.zst
+            build/deb/*.deb
