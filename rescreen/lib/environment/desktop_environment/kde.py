@@ -53,12 +53,14 @@ class KDE(DesktopEnvironmentInterface):
             return True
 
         if not cls.get_user_confirmation(
-            "To apply the display configuration, a session restart is required. "
-            "All currently open applications will be closed. Continue?"
+                "To apply the display configuration, a session restart is required. "
+                "All currently open applications will be closed. Continue?"
         ):
             return False
 
         config_dir = cls.CONFIG_DIR.expanduser()
+
+        scaling = int(scaling)
 
         subprocess.call(
             [
@@ -87,8 +89,8 @@ class KDE(DesktopEnvironmentInterface):
                     "",
                 ]
             )
-            .decode("utf-8")
-            .strip()
+                .decode("utf-8")
+                .strip()
         )
 
         new_screen_scale_factors = ""
@@ -127,15 +129,16 @@ class KDE(DesktopEnvironmentInterface):
             ]
         )
 
-        process = subprocess.Popen(
-            ["xrdb", "-quiet", "-merge", "-nocpp"], stdout=PIPE, stdin=PIPE, stderr=STDOUT
-        )
-        process.communicate(input=f"Xft.dpi: {font_dpi}\n".encode("utf-8"))
-
         if scaling == 2:
             cls.set_cursor_size(36)
         else:
             cls.set_cursor_size(24)
+
+        process = subprocess.Popen(
+            ["xrdb", "-quiet", "-merge", "-nocpp"], stdout=PIPE, stdin=PIPE, stderr=STDOUT
+        )
+
+        process.communicate(input=f"Xft.dpi: {font_dpi}\n".encode("utf-8"))
 
         cls.logout()
 
@@ -143,12 +146,15 @@ class KDE(DesktopEnvironmentInterface):
 
     @classmethod
     def post_xrandr_hook(cls, scaling: float) -> None:
-        subprocess.call(["killall", "plasmashell"])
+        try:
+            subprocess.run("killall plasmashell", check=True, shell=True)
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 1:
+                pass  # No plasmashell found
+            else:
+                raise e
 
-        env = os.environ
-        env["PLASMA_USE_QT_SCALING"] = "1"
-
-        subprocess.call(["kstart5", "plasmashell"], env=env)
+        subprocess.run("PLASMA_USE_QT_SCALING=1 kstart5 plasmashell", check=True, shell=True)
 
     @classmethod
     def get_ui_scale(cls) -> float:
@@ -166,11 +172,11 @@ class KDE(DesktopEnvironmentInterface):
                     "1",
                 ]
             )
-            .decode("utf-8")
-            .strip()
+                .decode("utf-8")
+                .strip()
         )
         return float(scale_factor)
 
     @classmethod
     def get_available_ui_scales(cls) -> List[float]:
-        return [1, 1.25, 1.5, 1.75, 2]
+        return [1, 2]
