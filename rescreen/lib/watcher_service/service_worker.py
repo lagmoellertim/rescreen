@@ -44,17 +44,15 @@ class ServiceWorker(Process):
             logger.exception("Not authorized to change linux environment")
             sys.exit(126)
 
+        app = QApplication()
         logger.info(f"Service Worker started for XSession {self.__environment_vars['DISPLAY']}")
         logger.debug(f"User Data: {self.__user_data}")
         logger.debug(f"Environment: {self.__environment_vars}")
-
         listener = XEventWatcher()
-        listener.daemon = True
         listener.add_connection_event_callback(self.load_current_profile)
         self.load_current_profile()
         listener.start()
-
-        listener.join()
+        app.exec_()
 
     @staticmethod
     def load_current_profile():
@@ -70,8 +68,6 @@ class ServiceWorker(Process):
             configuration = ConfigurationManager().load_configuration(current_configuration)
 
             try:
-                application = QApplication()
                 configuration.apply(prompt)
-                application.exit()
             except Exception:
                 logger.exception("Failed to apply configuration")
